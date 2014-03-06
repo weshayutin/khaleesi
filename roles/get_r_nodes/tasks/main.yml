@@ -1,0 +1,67 @@
+---
+- name: Provision nodes
+  rax:
+       credentials : "{{ credentials }}"
+       api_key: "{{ api_key }}"
+       state: present
+       name: "{{ item.name }}"
+       image: "{{ item.image_id }}"
+       key_name: "{{ item.key_name }}"
+       wait: yes
+       wait_timeout: 200
+       flavor: "{{ item.flavor_id }}"
+       networks: "{{ item.network_ids }}"
+       disk_config: manual
+  register: new_nodes
+  with_items: nodes
+
+
+
+- name: dump network and node info
+  debug: msg="{{ item }}"
+  with_together:
+    - new_nodes.results
+
+- name: Add Foreman hosts
+  add_host:
+      name="{{ item.0.item.name }}"
+      groups="{{ item.0.item.groups }}"
+      ansible_ssh_host="{{ item.1.public_ip }}"
+      ansible_ssh_private_key_file="{{ ssh_private_key }}"
+      public_ip="{{ item.1.public_ip }}"
+      private_ip="{{ item.0.private_ip }}"
+      foreman_private_ip="{{ item.0.info.addresses.foreman_int.0.addr }}"
+      foreman_public_ip="{{ item.0.info.addresses.foreman_ext.0.addr }}"
+      ansible_fqdn="{{ item.0.item.hostname }}"
+      priv_hostname="{{ item.0.item.hostname }}"
+      node_hostgroup="{{ item.0.item.node_hostgroup }}"
+  with_together:
+    - new_nodes.results
+    - floating_ips.results
+  when: "'foreman' in item.0.item.groups"
+
+- name: Add Packstack hosts
+  add_host:
+      name="{{ item.0.item.name }}"
+      groups="{{ item.0.item.groups }}"
+      ansible_ssh_host="{{ item.1.public_ip }}"
+      ansible_ssh_private_key_file="{{ ssh_private_key }}"
+      public_ip="{{ item.1.public_ip }}"
+      private_ip="{{ item.0.private_ip }}"
+      packstack_private_ip="{{ item.0.info.addresses.packstack_int.0.addr }}"
+      ansible_fqdn="{{ item.0.item.hostname }}"
+      priv_hostname="{{ item.0.item.hostname }}"
+      packstack_node_hostgroup="{{ item.0.item.packstack_node_hostgroup }}"
+  with_together:
+    - new_nodes.results
+    - floating_ips.results
+  when: "'packstack' in item.0.item.groups"
+
+- name: Pause to let the systems boot
+  pause: seconds="{{ wait_for_boot }}"
+  when: new_nodes|changed
+
+- name: Ping public IP to work around bug
+  command: "ping -c 3 {{ hostvars[item].public_ip }}"
+  ignore_errors: True
+  with_items: groups.openstack_nodes

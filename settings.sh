@@ -69,15 +69,16 @@ main() {
     local selinux=${SELINUX:-'enforcing'} #enforcing, permissive
 
     local update_rpms_tarball=${UPDATE_RPMS_TARBALL:-''}
+    local api_key=${API_KEY:-''}
 
-    local net_ids="[{ net-id: '$net_1' }"
-    if [[ ! -z $net_2 ]]; then
-      net_ids="$net_ids, { net-id: '$net_2' }"
-    fi
-    if [[ ! -z $net_3 ]]; then
-      net_ids="$net_ids, { net-id: '$net_3' }"
-    fi
-    net_ids="$net_ids ]"
+    #local net_ids="[{ net-id: '$net_1' }"
+    #if [[ ! -z $net_2 ]]; then
+    #  net_ids="$net_ids, { net-id: '$net_2' }"
+    #fi
+    #if [[ ! -z $net_3 ]]; then
+    #  net_ids="$net_ids, { net-id: '$net_3' }"
+    #fi
+    #net_ids="$net_ids ]"
 
 cat > settings.yml <<-EOF
 # job config
@@ -103,12 +104,16 @@ os_tenant_name: $OS_TENANT_NAME
 # instance settings
 job_name: $job_name
 node_prefix: $node_prefix
-network_ids: $net_ids
+network_ids:
+  - $net_1
+  - $net_2
 net_2_name: $net_2_name
 net_3_name: $net_3_name
 image_id: $image_id
 ssh_private_key: $key_file
+credentials: $key_file
 ssh_key_name: $key_name
+api_key: $api_key
 flavor_id: $flavor_id
 floating_network_name: $floating_nw_name
 tempest_image_id: $tempest_image_id
@@ -134,6 +139,7 @@ update_rpms_tarball: $update_rpms_tarball
 # Currently sudo w/ NOPASSWD must be enabled in /etc/sudoers for sudo to work
 # running w/ -u $remote_user and -s will override these options
 remote_user: $remote_user
+
 
 tempest:
     puppet_file: /tmp/tempest_init.pp

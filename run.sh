@@ -83,3 +83,4 @@ fi
 main "$@" || true
 collect_logs || true
 
+
