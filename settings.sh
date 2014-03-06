@@ -70,6 +70,7 @@ main() {
 
     local update_rpms_tarball=${UPDATE_RPMS_TARBALL:-''}
     local api_key=${API_KEY:-''}
+    local credentials=${CREDENTIALS:-''}
 
     #local net_ids="[{ net-id: '$net_1' }"
     #if [[ ! -z $net_2 ]]; then
@@ -100,6 +101,8 @@ os_auth_url: '$OS_AUTH_URL'
 os_username: $OS_USERNAME
 os_password: $OS_PASSWORD
 os_tenant_name: $OS_TENANT_NAME
+credentials: $credentials
+api_key: $api_key
 
 # instance settings
 job_name: $job_name
@@ -107,13 +110,12 @@ node_prefix: $node_prefix
 network_ids:
   - $net_1
   - $net_2
+  - $net_3
 net_2_name: $net_2_name
 net_3_name: $net_3_name
 image_id: $image_id
 ssh_private_key: $key_file
-credentials: $key_file
 ssh_key_name: $key_name
-api_key: $api_key
 flavor_id: $flavor_id
 floating_network_name: $floating_nw_name
 tempest_image_id: $tempest_image_id
