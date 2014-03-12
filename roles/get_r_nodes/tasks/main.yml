@@ -44,7 +44,7 @@
       groups="{{ item.0.item.groups }}"
       ansible_ssh_host="{{ item.0.instances.0.rax_addresses.public.1.addr }}"
       ansible_ssh_private_key_file="{{ ssh_private_key }}"
-      public_ip="{{ item.0.instances.0.rax_addresses.public.1.addr }}"
+      public_ip="{{ item.0.instances.0.rax_addresses.public.0.addr }}"
       private_ip="{{ item.0.instances.0.rax_addresses.default.0.addr }}"
       packstack_private_ip="{{ item.0.instances.0.rax_addresses.packstack_int.0.addr  }}"
       ansible_fqdn="{{ item.0.item.hostname }}"
