@@ -42,9 +42,9 @@
   add_host:
       name="{{ item.0.item.name }}"
       groups="{{ item.0.item.groups }}"
-      ansible_ssh_host="{{ item.0.instances.0.rax_addresses.public.1.addr }}"
+      ansible_ssh_host="{{ item.0.instances.0.accessIPv4 }}"
       ansible_ssh_private_key_file="{{ ssh_private_key }}"
-      public_ip="{{ item.0.instances.0.rax_addresses.public.0.addr }}"
+      public_ip="{{ item.0.instances.0.accessIPv4 }}"
       private_ip="{{ item.0.instances.0.rax_addresses.default.0.addr }}"
       packstack_private_ip="{{ item.0.instances.0.rax_addresses.packstack_int.0.addr  }}"
       ansible_fqdn="{{ item.0.item.hostname }}"
@@ -53,6 +53,22 @@
   with_together:
     - new_nodes.results
   when: "'packstack' in item.0.item.groups"
+
+- name: Add Tempest host
+  add_host:
+      name="{{ item.0.item.name }}"
+      groups="{{ item.0.item.groups }}"
+      ansible_ssh_host="{{ item.0.instances.0.accessIPv4 }}"
+      ansible_ssh_private_key_file="{{ ssh_private_key }}"
+      public_ip="{{ item.0.instances.0.accessIPv4 }}"
+      private_ip="{{ item.0.instances.0.rax_addresses.default.0.addr }}"
+      ansible_fqdn="{{ item.0.item.hostname }}"
+      priv_hostname="{{ item.0.item.hostname }}"
+      tempest_private_ip="{{ item.0.instances.0.rax_addresses.default.0.addr }}"
+  with_together:
+    - new_nodes.results
+    - floating_ips.results
+  when: "'tempest' in item.0.item.groups"
 
 - name: Pause to let the systems boot
   pause: seconds="{{ wait_for_boot }}"
