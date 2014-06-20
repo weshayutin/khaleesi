@@ -1,9 +1,5 @@
 ---
 #RHEL
-- name: Remove yum-rhn-plugin
-  yum: name=yum-rhn-plugin state=absent
-  register: result
-
 - name: Yum clean all
   command: yum clean all
   when: result|changed
@@ -23,7 +19,7 @@
   notify:
     - Yum clean all
     - yum -y update to latest packages
-  when: ansible_distribution_version == "7.0"
+  when: ansible_distribution_version == "7.0" and provisioner_env != "ec2"
 
 - name: Create the EPEL Repository
   template: src=epel.repo.j2 dest=/etc/yum.repos.d/epel.repo

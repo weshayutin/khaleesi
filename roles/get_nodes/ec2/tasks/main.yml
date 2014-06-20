@@ -1,0 +1,16 @@
+---
+- name: Provision nodes
+  ec2:
+       aws_access_key: "{{ aws_access_key }}"
+       aws_secret_key: "{{ aws_secret_key }}"
+       state: present
+       image: "{{ image_id }}"
+       key_name: "{{ ssh_key_name }}"
+       wait: yes
+       wait_timeout: 180
+       instance_type: "{{ instance_type }}"
+       region: "{{ ec2_region }}"
+  retries: 4
+  delay: 60
+  register: new_nodes
+  with_items: nodes

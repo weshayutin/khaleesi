@@ -4,7 +4,7 @@
   with_items:
     - libselinux-python
 
-- name: Remove yum-rhn-plugin
-  yum: name=yum-rhn-plugin state=absent
-  notify:
-    - Yum clean all
+# - name: Remove yum-rhn-plugin
+#   yum: name=yum-rhn-plugin state=absent
+#   notify:
+#     - Yum clean all

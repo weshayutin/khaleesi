@@ -1,3 +1,4 @@
+{# define variables for openstack environments #}
 {% if item.0.info is defined %}
     {% if net_2_name is defined and item.0.info.addresses[net_2_name].0.addr is defined %}
       {{ net_2_name }}="{{ item.0.info.addresses[net_2_name].0.addr }}"
@@ -13,7 +14,8 @@
       net_interfaces="{{ item.0.item.net_interfaces }}"
 {% endif %}
 
-{% if item.0.instances is defined %}
+{# define variables for rackspace environments #}
+{% if item.0.instances.0.accessIPv4 is defined %}
     {% if net_2_name is defined and item.0.instances.0.rax_addresses[net_2_name].0.addr is defined %}
       {{ net_2_name }}="{{item.0.instances.0.rax_addresses[net_2_name].0.addr }}"
       tempest_private_ip="{{ item.0.instances.0.rax_addresses[net_2_name].0.addr }}"
@@ -28,6 +30,16 @@
       net_interfaces="{{ item.0.instances.0.rax_addresses }}"
 {% endif %}
 
+{# define variables for amazon ec2 environments #}
+{% if item.0.instances.0.ami_launch_index is defined %}
+      ansible_ssh_host="{{ item.0.instances.0.public_ip }}"
+      public_ip="{{ item.0.instances.0.public_ip }}"
+      private_ip="{{ item.0.instances.0.private_ip }}"
+      net_interfaces=""
+{% endif %}
+
+
+{# define variables for all environments #}
 {% if item.0.item.node_hostgroup is defined %}
       node_hostgroup="{{ item.0.item.node_hostgroup }}"
 {% endif %}
