@@ -17,6 +17,7 @@
   sudo: yes
   roles:
     - { role: product/rdo/common }
+    - { role: foreman/rdo }
   tags:
     - prep
 
@@ -32,6 +33,23 @@
   hosts: foreman_installer:Fedora:&rdo
   roles:
     - { role: product/rdo/fedora }
+  tags:
+    - prep
+
+- name: Prepare for install - RHOS common
+  hosts: foreman_installer
+  sudo: yes
+  roles:
+    - { role: product/rhos/common }
+    - { role: foreman/rhos }
+  tags:
+    - prep
+
+- name: Prepare for install - RHOS - RHEL and CentOS
+  hosts: foreman_installer:RedHat:CentOS:&rhos
+  sudo: yes
+  roles:
+    - { role: product/rhos/rhel }
   tags:
     - prep
 

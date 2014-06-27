@@ -1,0 +1,3 @@
+---
+- name: Create the RHOS foreman repositories for RHEL
+  template: src=foreman.repo.j2 dest=/etc/yum.repos.d/foreman.repo
