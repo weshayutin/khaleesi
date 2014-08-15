@@ -1,0 +1,12 @@
+---
+- name: Create the delorean upstream rpm repository
+  template: src=delorean_repo.j2 dest=/etc/yum.repos.d/delorean.repo
+  notify:
+    - Yum clean all
+
+- name: List available yum repositories
+  command: yum -d 7 repolist
+  register: result
+
+- name: Print repolist
+  debug: var=result.stdout_lines
