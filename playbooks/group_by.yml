@@ -16,3 +16,11 @@
       when: product is defined
   tags:
     - prep
+
+- name: Group hosts by product version
+  hosts: all:!localhost:!tempest
+  tasks:
+    - group_by: key={{ product.version }}
+      when: product is defined
+  tags:
+    - prep

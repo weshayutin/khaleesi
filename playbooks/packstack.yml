@@ -32,7 +32,7 @@
 - include: ../workarounds/workarounds-prep.yml tags=workaround
 
 - name: Setup Delorean Upstream Repositories on Controller (rdo)
-  hosts: controller:&rdo
+  hosts: controller:&upstream
   sudo: yes
   roles:
       - upstream_rpms
