@@ -1,0 +1,11 @@
+---
+#- include: staypuft/baremetal-setup.yml
+
+- include: group_by.yml
+
+- name: Populate virtual machines
+  hosts: staypuft_host
+  sudo: yes
+  roles:
+    - { role: create_vms/libvirt_create_vms, staypuft_guest_count: 5 }
+

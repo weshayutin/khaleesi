@@ -1,0 +1,71 @@
+---
+- name: ensure rpm deps
+  yum: name={{item}} state=latest
+      with_items:
+        - libguestfs-tools
+        - sshpass
+
+- name: copy current group_1 image
+  shell: cp /var/lib/libvirt/images/group* /var/lib/libvirt/images/my.img
+
+- name: execute virt-sysprep
+  command: virt-sysprep  -a /var/lib/libvirt/images/my.img
+
+- name: copy images
+  shell:  for i in {1..5}; do cp /var/lib/libvirt/images/my.img /var/lib/libvirt/images/server0$i.img; done
+
+- name: Add OS specific vars
+  include_vars: "{{ ansible_distribution }}.yml"
+
+# - name: Create VM images
+#   qemu_img: dest=/var/lib/libvirt/images/{{ item }}.qcow2 size=16384 format=qcow2 opt=preallocation=metadata state=present
+#   with_sequence: count={{ staypuft_guest_count }} format={{ name_format }}
+
+- name: Create templates
+  template: src=./server.xml.j2 dest=/tmp/server{{item}}.xml
+  with_sequence: count={{ staypuft_guest_count }}
+
+- name: Create VMs
+  virt: name={{ item }}
+        command=define
+        xml="{{ lookup('template', '../templates/server.xml.j2') }}"
+  with_sequence: count={{ staypuft_guest_count }} format={{ name_format }}
+
+- name: Start VMs
+  virt: name={{ item }}
+        state=running
+  with_sequence: count={{ staypuft_guest_count }} format={{ name_format }}
+
+- name: Allow vm's to boot
+  pause: minutes=4
+
+- name: get ip addresses of guests
+  shell: >
+   cat  /var/lib/libvirt/dnsmasq/default.leases  | awk -F " " '{print $3}' > /tmp/leases
+  register: result
+
+- name: get ip addresses of guests
+  shell: >
+   cat  /var/lib/libvirt/dnsmasq/default.leases  | awk -F " " '{print $3}' | tr '\n' ', '
+  register: result
+
+
+- name: print ip addresses of guests
+  debug: msg={{result.stdout_lines}}
+
+- name: Create ssh key if one does not exist
+  # this will not overwrite an existing key
+  user: name=root generate_ssh_key=yes
+  sudo: yes
+  sudo_user: root
+
+- name: add id_rsa to authorized_keys
+  shell: cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+  sudo: yes
+  sudo_user: root
+
+- name: add ssh key to guests
+  shell: >
+   for i in `cat /tmp/leases`; do sshpass -p vagrant ssh-copy-id vagrant@$i; done
+  ignore_errors: true
+

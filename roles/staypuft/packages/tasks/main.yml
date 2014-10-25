@@ -23,3 +23,5 @@
     - xauth
     - python-beautifulsoup4
     - rubygem-nokogiri
+    - net-tools
+    - libguestfs-tools

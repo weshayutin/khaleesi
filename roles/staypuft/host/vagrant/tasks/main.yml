@@ -21,6 +21,7 @@
   command: vagrant box add {{ item.url }} --name {{ item.name }} --force
   with_items:
     - { name: 'staypuft/rhel65', url: 'http://file.rdu.redhat.com/~bcrochet/vagrant/rhel65.box' }
+    - { name: 'staypuft/rhel65', url: 'http://file.rdu.redhat.com/~bcrochet/vagrant/rhel70.box' }
     - { name: 'staypuft/pxeboot', url: 'http://file.rdu.redhat.com/~bcrochet/vagrant/pxeboot.box' }
 
 - name: Enable libvirt and start it
