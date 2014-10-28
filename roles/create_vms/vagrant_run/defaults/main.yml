@@ -2,8 +2,7 @@
 vagrant_environment:
     VAGRANT_LOG: "info"
     VAGRANT_DEFAULT_PROVIDER: "libvirt"
-    VAGRANT_PLAYBOOK: "{{ ansible_env.HOME }}/khaleesi/playbooks/vm-vagrant-provision.yml"
-    VAGRANT_KHALEESI_SETTINGS: "{{ ansible_env.HOME }}/vm-install-groups/group1/ksgen_settings.yml"
+    VAGRANT_KHALEESI_SETTINGS: "{{ ansible_env.HOME }}/baremetal-install-groups/group1/ksgen_settings.yml"
     PATH: "{{ ansible_env.HOME }}/.venv/bin:{{ ansible_env.PATH }}"
     WORKSPACE: "{{ ansible_env.HOME }}"
     KHALEESI_SETTINGS_PATH: "{{ ansible_env.HOME }}/khaleesi-settings"
@@ -11,5 +10,5 @@ vagrant_environment:
     ANSIBLE_ROLES_PATH: "{{ ansible_env.HOME }}/khaleesi/roles"
     ANSIBLE_LIBRARY: "{{ ansible_env.HOME }}/khaleesi/library:{{ ansible_env.HOME }}/.venv/share/ansible"
     ANSIBLE_CALLBACK_PLUGINS: "{{ ansible_env.HOME }}/khaleesi/plugins/callbacks"
-    KHALEESI_LOG_PATH: "{{ ansible_env.HOME }}/vm-install-groups/group1/khaleesi-stdstreams"
+    KHALEESI_LOG_PATH: "{{ ansible_env.HOME }}/baremetal-install-groups/group1/khaleesi-stdstreams"
 

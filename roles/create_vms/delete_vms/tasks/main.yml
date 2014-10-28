@@ -1,0 +1,16 @@
+---
+- name: delete  vagrant host
+  command: "vagrant destroy  chdir={{ ansible_env.HOME }}/baremetal-install-groups/group1"
+  environment:
+    VAGRANT_DEFAULT_PROVIDER: "libvirt"
+    VAGRANT_KHALEESI_SETTINGS: "{{ ansible_env.HOME }}/baremetal-install-groups/group1/ksgen_settings.yml"
+
+- name: destroy networks
+  command: virsh net-destroy {{ item}}
+  with_items:
+    - openstack_floating_ips
+    - openstack_tenant
+    - pxe_net
+    - vagrant-libvirt
+
+

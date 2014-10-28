@@ -1,0 +1,10 @@
+---
+- include: group_by.yml
+
+- name: clean virtual machines
+  hosts: staypuft_host
+  sudo: yes
+  roles:
+    - { role: create_vms/delete_vms, staypuft_guest_count: 5 }
+
+

@@ -1,9 +1,9 @@
 ---
 - name: ensure rpm deps
-  yum: name={{item}} state=latest
-      with_items:
-        - libguestfs-tools
-        - sshpass
+  yum: name={{ item }} state=latest
+  with_items:
+    - libguestfs-tools
+    - sshpass
 
 - name: copy current group_1 image
   shell: cp /var/lib/libvirt/images/group* /var/lib/libvirt/images/my.img

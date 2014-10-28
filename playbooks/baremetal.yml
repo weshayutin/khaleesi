@@ -1,11 +1,34 @@
 ---
 #- include: staypuft/baremetal-setup.yml
 
-- include: group_by.yml
+#- include: group_by.yml
 
-- name: Populate virtual machines
+# - name: Continue config and setup vagrant
+#   hosts: staypuft_host
+#   sudo: yes
+#   roles:
+#     - { role: nested_virt }
+#     - { role: linux_bridge, physical_interface: "{{ ansible_default_ipv4.interface }}", bridge_name: br0 }
+#     - { role: dnsmasq, dnsmasq_interface: br0, dhcp_range_start: 10.13.63.100, dhcp_range_end: 10.13.63.200 }
+#     - { role: staypuft/host/nfs_server }
+#     - { role: staypuft/host/vagrant }
+#     - { role: staypuft/host/ansible }
+
+# - name: Sync inner khaleesi with outer khaleesi
+#   hosts: staypuft_host
+#   roles:
+#     - { role: staypuft/host/khaleesi }
+
+# - name: Populate virtual machines
+#   hosts: staypuft_host
+#   sudo: yes
+#   roles:
+#     - { role: create_vms/vagrant_run, staypuft_guest_count: 5 }
+
+- name: collect ip info
   hosts: staypuft_host
   sudo: yes
   roles:
-    - { role: create_vms/libvirt_create_vms, staypuft_guest_count: 5 }
+    - { role: create_vms/collect_ips }
+
 
