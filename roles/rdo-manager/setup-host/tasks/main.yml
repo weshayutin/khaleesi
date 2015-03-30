@@ -1,28 +1,4 @@
 ---
-- name: ensure rhos-release is disabled
-  shell: "rhos-release  -x {{ product.version|int }}; "
-  sudo: yes
-  ignore_errors: yes
-
-- name: ensure release rpms are removed
-  yum: name={{item }} state=absent
-  sudo: yes
-  with_items:
-    - rhos-release
-    - rdo-release
-    - epel-release
-
-- name: remove any yum repos before the setup host script
-  shell: rm -Rf /etc/yum.repos.d/*.repo
-  sudo: yes
-
-- name: get instack-setup-host script if it doesn't exist
-  get_url: url=https://raw.githubusercontent.com/rdo-management/instack-undercloud/master/scripts/instack-setup-host
-                  dest=/usr/bin/instack-setup-host mode=0755
-  sudo: yes
-
-- name: run instack-setup-host script
-  shell: export RUN_RHOS_RELEASE=1; instack-setup-host
 
 - name: get the guest-image
   shell: >

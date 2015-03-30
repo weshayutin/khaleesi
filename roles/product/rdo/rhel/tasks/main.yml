@@ -28,12 +28,12 @@
     dest=/etc/yum.repos.d/rdo-release.repo
     regexp=^baseurl=
     line="baseurl={{ product.repo[product.repo_type][ansible_distribution][ansible_distribution_version] }}"
-  when: product.repo_type != 'delorean'
+  when: product.repo_type not in ['delorean', 'delorean_mgt']
   notify:
     - Yum clean all
 
 - name: Create the upstream delorean repositories for EPEL RDO
-  get_url: url="{{ product.repo['delorean'][ansible_distribution][ansible_distribution_version] }}"/current/delorean.repo
+  get_url: url="{{ product.repo['delorean'][ansible_distribution][ansible_distribution_version] }}"/current/delorean.repo 
             dest=/etc/yum.repos.d/rdo-trunk-release.repo
             mode=0644
   notify:
