@@ -6,6 +6,11 @@
   file: path=/tmp/svc-map-services state=absent
   sudo: yes
 
+- name: clear out 00-centos-cloud-repo
+  command: "cat /dev/null > /usr/share/instack-undercloud/centos-cloud-repo/pre-install.d/00-centos-cloud-repo"
+  sudo: yes
+  when: distro.name == 'centos'
+
 - name: build all the images
   shell: >
         source {{ instack_user_home }}/build-img-env;
