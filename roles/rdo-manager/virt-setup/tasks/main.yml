@@ -1,9 +1,10 @@
 ---
-- name: workaround dib centos | replace baseurl with mirrorlist
+- name: workaround dib centos | replace baseurl with mirrorlists
   sudo: yes
-  lineinfile: "dest=/usr/share/diskimage-builder/elements/centos7/pre-install.d/01-yum-repos
-              regexp='^baseurl=http:\/\/buildlogs'
-              line="mirrorlist=http://mirrorlist.centos.org/?release=7&arch=\$basearch&repo=os&infra=\$infra"
+  template: src=01-yum-repos.j2 
+            dest=/usr/share/diskimage-builder/elements/centos7/pre-install.d/01-yum-repos
+            mode=0755
+            owner=root group=root
 
 - name: setup environment vars
   template: src=virt-setup-env.j2 dest=~/virt-setup-env mode=0755
