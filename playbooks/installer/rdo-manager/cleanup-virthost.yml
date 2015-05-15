@@ -115,3 +115,14 @@
         - NetworkManager
         - qemu-*
         - openstack-*
+
+    - name: restart machine
+      command: shutdown -r now "Ansible reboot triggered"
+      async: 0
+      poll: 0
+      ignore_errors: true
+
+    - name: waiting for server to come back
+      local_action: wait_for host=virthost
+                    state=started
+      sudo: false
