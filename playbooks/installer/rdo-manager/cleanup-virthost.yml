@@ -117,7 +117,7 @@
         - openstack-*
 
     - name: restart machine
-      command: shutdown -r now "Ansible reboot triggered"
+      command: shutdown -r "Ansible reboot triggered, in 60 seconds"
       async: 0
       poll: 0
       ignore_errors: true
@@ -125,4 +125,5 @@
     - name: waiting for server to come back
       local_action: wait_for host=virthost
                     state=started
+                    delay=90
       sudo: false
