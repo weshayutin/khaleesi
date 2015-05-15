@@ -116,8 +116,12 @@
         - qemu-*
         - openstack-*
 
+#required for
+#error: Failed to start network default
+#error: internal error: Network is already in use by interface virbr0
+
     - name: restart machine
-      command: shutdown -r "Ansible reboot triggered, in 60 seconds"
+      command: shutdown -r 
       async: 0
       poll: 0
       ignore_errors: true
@@ -125,5 +129,5 @@
     - name: waiting for server to come back
       local_action: wait_for host=virthost
                     state=started
-                    delay=90
+                    delay=120
       sudo: false
