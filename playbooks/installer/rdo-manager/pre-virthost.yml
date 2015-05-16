@@ -128,9 +128,6 @@
                   line='unix_sock_group = "stack"'
       sudo: yes
 
-    - name: add stack to libvirtd group
-      command: usermod -a -G libvirtd stack
-
     - name: restart libvirtd
       service: name=libvirtd state=restarted
       sudo: yes
