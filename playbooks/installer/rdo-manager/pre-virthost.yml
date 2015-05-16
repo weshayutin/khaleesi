@@ -152,9 +152,19 @@
       command: 'virsh capabilities'
       when: "instack_virt_setup_result.rc != 0"
 
+    - name: stop virbr0
+      command: ip link set virbr0 down
+      sudo: yes
+      ignore_errors: true
+
+    - name: delete libvirt bridge virbr0
+      command: brctl delbr virbr0
+      sudo: yes
+      ignore_errors: true
+
     - name: start default libvirt network
       command: virsh net-start default
-      sudo: no
+      sudo: yes
       ignore_errors: true
 
     - name: retry run instack-virt-setup
