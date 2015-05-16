@@ -131,3 +131,6 @@
                     state=started
                     delay=120
       sudo: false
+
+    - name: get uptime
+      command: uptime
