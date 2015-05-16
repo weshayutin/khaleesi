@@ -28,9 +28,6 @@
     - name: set fact for the stack user home
       set_fact: instack_user_home=/home/{{ installer.user.stack.name }}
 
-    - name: add stack to libvirt group
-      command: usermod -a -G libvirtd stack
-
 - name: Group all hosts in gate if we are gating
   hosts: all
   tasks:
@@ -130,6 +127,9 @@
                   regexp=^unix_sock_group
                   line='unix_sock_group = "stack"'
       sudo: yes
+
+    - name: add stack to libvirtd group
+      command: usermod -a -G libvirtd stack
 
     - name: restart libvirtd
       service: name=libvirtd state=restarted
