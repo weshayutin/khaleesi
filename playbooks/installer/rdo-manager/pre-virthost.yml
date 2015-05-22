@@ -1,5 +1,5 @@
 ---
-- include: cleanup-virthost.yml
+#- include: cleanup-virthost.yml
 - include: repo-{{ product.name }}.yml repo_host=virthost
 
 - name: Create the stack user on the virthost
