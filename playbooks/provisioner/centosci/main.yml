@@ -59,7 +59,7 @@
   sudo: no
   tasks:
     - name: updating host short name
-      set_fact: inventory_hostname_short="{{ inventory_hostname.split('-')|last }}"
+      set_fact: inventory_hostname_short="controller"
       when: installer.type in ['packstack']
 
     - name: Setup networking (interfaces)
