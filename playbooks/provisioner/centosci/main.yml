@@ -74,14 +74,14 @@
       register: update_ifcfgs
       when: installer.type in ['packstack']
 
-    #TODO(tkammer): write this better by fixing the upstream module to provide the private IP properly
-    - name: update IP address of eth1 interface
-      lineinfile:
-          dest: /etc/sysconfig/network-scripts/ifcfg-eth1
-          regexp: IPADDR=
-          line: "IPADDR={{ hostvars[inventory_hostname].eth1_interface_ip }}"
-      register: update_ifcfg1
-      when: installer.type in ['packstack']
+    # #TODO(tkammer): write this better by fixing the upstream module to provide the private IP properly
+    # - name: update IP address of eth1 interface
+    #   lineinfile:
+    #       dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    #       regexp: IPADDR=
+    #       line: "IPADDR={{ hostvars[inventory_hostname].eth1_interface_ip }}"
+    #   register: update_ifcfg1
+    #   when: installer.type in ['packstack']
 
     - name: reboot after networking update
       local_action:
