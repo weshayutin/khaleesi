@@ -52,6 +52,17 @@
         module: wait_for_ssh host={{ hostvars[inventory_hostname].ansible_ssh_host }} user=root key={{ hostvars[inventory_hostname].ansible_ssh_private_key_file }}
       sudo: no
 
+- name: generate inventory file
+  hosts: localhost
+  tasks:
+    - template:
+        dest: "{{ lookup('env', 'PWD') }}/hosts-{{ tmp.node_prefix }}"
+        src: ../templates/inventory.j2
+    - file:
+        dest: "{{ lookup('env', 'PWD') }}/hosts"
+        state: link
+        src: "{{ lookup('env', 'PWD') }}/hosts-{{ tmp.node_prefix }}"
+
 - name: Update network interfaces on nodes - OpenStack
   hosts: openstack_nodes
   gather_facts: yes
