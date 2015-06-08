@@ -35,7 +35,7 @@
     - name: Add created hosts to packstack host list
       add_host:
         name="{{ item.name }}"
-        groups="provisioned, controller, network, compute, openstack_nodes"
+        groups="provisioned, controller, network, compute, openstack_nodes, tester"
         ansible_fqdn="{{ item.hostname }}"
         ansible_ssh_user="{{ provisioner.remote_user }}"
         ansible_ssh_private_key_file="{{ provisioner.key_file }}"
