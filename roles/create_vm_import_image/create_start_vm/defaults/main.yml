@@ -6,8 +6,8 @@ cloud_image_resize: "+40G"
 cloud_init_iso_name: "cloud-init-iso.iso"
 
 instance_name: "tempest"
-instance_ram: "2048"
-instance_vcpu: "2"
+instance_ram: "4096"
+instance_vcpu: "1"
 
 hypervisor_image_path: "/var/lib/libvirt/images/"
 boot_timeout: "30"

@@ -6,7 +6,6 @@
     - '@virtualization'
     - virt-install
     - genisoimage
-    - qemu-img-rhev
 
 - name: install libvirt host rpm dependencies (RedHat)
   yum: name={{ item }} state=present

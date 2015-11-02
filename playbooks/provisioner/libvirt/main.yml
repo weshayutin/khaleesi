@@ -1,0 +1,8 @@
+---
+- name: Ensure libvirt requirements
+  hosts: localhost
+  sudo: yes
+  roles:
+    - virthost
+    - create_vm_import_image/create_start_vm
+
