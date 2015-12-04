@@ -13,7 +13,7 @@
            name: "{{ item.value.name }}"
            image_id: "{{ item.value.image_id }}"
            key_name: "{{ provisioner.key_name }}"
-           flavor_id: "{{ item.value.flavor_id }}"
+           flavor_id: 4
            nics:
               - net-id: "{{ provisioner.network.network_list.management.id }}"
               - net-id: "{{ provisioner.network.network_list.data.id }}"
