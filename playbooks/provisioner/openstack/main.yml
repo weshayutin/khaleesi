@@ -19,7 +19,7 @@
               - net-id: "{{ provisioner.network.network_list.data.id }}"
               - net-id: "{{ provisioner.network.network_list.external.id }}"
            config_drive: True
-           auto_floating_ip: "{{ provisioner.network.use_floating_ip }}"
+           auto_floating_ip: False
            wait_for: 800
              # our library/nova_compute will retry booting new servers
              # in case of errors, until it reaches 'wait_for' seconds timelimit
