@@ -10,3 +10,5 @@ provisioner:
 defaults:
     tenant: rhos-jenkins
     user: rhos-jenkins
+
+#"10.8.172.0/22"

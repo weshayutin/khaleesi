@@ -26,18 +26,36 @@
       with_dict: provisioner.nodes
       register: created_nodes
 
+    - name: Assign floating ip
+      quantum_floating_ip:
+           auth_url: "{{ provisioner.auth_url }}"
+           state: present
+           login_username: "{{ provisioner.username }}"
+           login_password: "{{ provisioner.password }}"
+           login_tenant_name: "{{ provisioner.tenant_name }}"
+           network_name: "10.8.172.0/22"
+           instance_name: "{{ item.item.value.name }}"
+           internal_network_name: whayutin
+      register: floating_ips
+      with_items: created_nodes.results
+
+    - name: debug
+      debug: var=floating_ips.results
+
     - name: Add created hosts to host list
       add_host:
-        name="{{ item.item.value.name }}"
-        groups="{{ item.item.value.groups
-            if item.item.value.groups is string
-            else item.item.value.groups| join(',') }}"
-        ansible_fqdn="{{ item.item.value.hostname }}"
-        ansible_ssh_user="{{ item.item.value.remote_user }}"
+        name="{{ item.0.item.value.name }}"
+        groups="{{ item.0.item.value.groups
+            if item.0.item.value.groups is string
+            else item.0.item.value.groups| join(',') }}"
+        ansible_fqdn="{{ item.0.item.value.hostname }}"
+        ansible_ssh_user="{{ item.0.item.value.remote_user }}"
         ansible_ssh_private_key_file="{{ provisioner.key_file }}"
-        ansible_ssh_host={%- if item.public_ip %}{{ item.public_ip }}{%- else %}{{ item.info.addresses[provisioner.network.network_list.management.name][0].addr }}{% endif %}
-        eth1_interface_ip="{{ item.info.addresses[provisioner.network.network_list.data.name][0].addr }}"
-      with_items: created_nodes.results
+        ansible_ssh_host={%- if item.1.public_ip %}{{ item.1.public_ip }}{%- else %}{{ item.0.info.addresses[provisioner.network.network_list.management.name][0].addr }}{% endif %}
+        eth1_interface_ip="{{ item.0.info.addresses[provisioner.network.network_list.data.name][0].addr }}"
+      with_together:
+        - created_nodes.results
+        - floating_ips.results
 
 - name: wait for hosts to get reachable
   hosts: openstack_nodes
