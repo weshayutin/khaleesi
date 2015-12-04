@@ -1,0 +1,27 @@
+--- !extends:common/image.yml
+
+provisioner:
+    tenant_name: !env OS_TENANT_NAME
+
+    network:
+        network_list:
+            management:
+                name: whayutin
+                id: baf5e18b-6bdd-41b7-b905-73b50557442d
+            data:
+                name: whayutin-1
+                id: 5f5d0c08-de12-4c66-9e60-fc2d8d24d9ba
+            external:
+                name: whayutin-2
+                id: 78eac37e-99f4-4cc6-beb5-22bf88cae90a
+                subnet_cidr: 172.16.22.0/24
+                subnet_gateway: 172.16.22.1
+                allocation_start: 172.16.22.200
+                allocation_end: 172.16.22.220
+
+    flavor:
+        tiny:  1
+        small: 2
+        medium: 3
+        large: 4
+        xlarge: 5

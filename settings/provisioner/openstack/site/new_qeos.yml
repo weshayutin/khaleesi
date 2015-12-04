@@ -1,0 +1,12 @@
+provisioner:
+    auth_url: !env OS_AUTH_URL
+
+    network:
+        domain: ""
+        type: neutron
+        name: public
+        use_floating_ip: true
+
+defaults:
+    tenant: rhos-jenkins
+    user: rhos-jenkins

@@ -1,0 +1,5 @@
+provisioner:
+    username: !env OS_USERNAME
+    password: !env OS_PASSWORD
+    key_file: !join [ !env HOME , /.ssh/rhos-jenkins/id_rsa ]
+    key_name: rhos-jenkins
