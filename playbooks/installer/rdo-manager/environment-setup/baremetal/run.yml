@@ -1,0 +1,125 @@
+---
+- name: Ensure baremetal host has no yum repos installed
+  hosts: undercloud
+  vars:
+    - ansible_ssh_user: root
+  tasks:
+      - name: clean release rpms
+              yum: name={{ item }} state=absent
+              with_items:
+                - rdo-release*
+                - epel-release
+                - rhos-release
+
+      - name: remove any yum repos not owned by rpm
+        shell: rm -Rf /etc/yum.repos.d/{{ item }}
+        with_items:
+          - beaker-*
+
+- include: {{base_dir}}/khaleesi/playbooks/installer/rdo-manager/yum_repos/repo-{{ product.name }}.yml repo_host=undercloud
+
+- name: Update packages on the host
+  hosts: undercloud
+  vars:
+    - ansible_ssh_user: root
+  tasks:
+    - name: repolist
+      command: yum -d 7 repolist
+
+    - name: update all packages
+      yum: name=* state=latest
+
+- name: Enable ip forwarding
+  hosts: undercloud
+  vars:
+    - ansible_ssh_user: root
+  tasks:
+    - name: enabling ip forwarding
+      lineinfile: dest=/etc/sysctl.conf line='net.ipv4.ip_forward = 1' insertafter=EOF state=present
+      when: hw_env.ip_forwarding is defined and hw_env.ip_forwarding == 'true'
+
+    - name: check ip forwarding
+      shell: sysctl -p /etc/sysctl.conf
+      when: hw_env.ip_forwarding is defined and hw_env.ip_forwarding == 'true'
+
+- name: Configure the baremetal undercloud
+  hosts: undercloud
+  tasks:
+    - name: check if instackenv.json exists in root
+      stat: path="/root/instackenv.json"
+      register: instackenv_json_root
+      sudo_user: root
+      sudo: yes
+
+    - name: copy instackenv.json from root if it exists there
+      shell: cp /root/instackenv.json {{ instack_user_home }}/instackenv.json
+      when: instackenv_json_root.stat.exists == True
+      sudo_user: root
+      sudo: yes
+
+    - name: get instackenv.json
+      synchronize: src={{base_dir}}/khaleesi-settings/hardware_environments/{{hw_env.env_type}}/instackenv.json dest={{ instack_user_home }}/instackenv.json
+      when: instackenv_json_root.stat.exists == False
+
+    - name: chown instackenv.json
+      file: path={{ instack_user_home }}/instackenv.json owner=stack group=stack
+      sudo_user: root
+      sudo: yes
+
+    - name: install ipmitool
+      yum: name={{ item }} state=latest
+      with_items:
+        - OpenIPMI
+        - OpenIPMI-tools
+      sudo_user: root
+      sudo: yes
+
+    - name: install sshpass - DRACS
+      yum: name=sshpass state=latest
+      sudo_user: root
+      sudo: yes
+      when: hw_env.remote_mgmt == "dracs"
+
+    - name: start IMPI service
+      shell: >
+        sudo chkconfig ipmi on;
+        sudo service ipmi start
+
+    - name: get tools to validate instackenv.json/nodes.json
+      git: >
+        repo="https://github.com/rthallisey/clapper.git"
+        dest="{{instack_user_home}}/clapper"
+
+    - name: validate instackenv.json
+      shell: >
+        chdir={{instack_user_home}}
+        python clapper/instackenv-validator.py -f {{ instack_user_home }}/instackenv.json
+      register: instackenv_validator_output
+
+    - name: fail if instackenv.json fails validation
+      fail: msg="instackenv.json didn't validate."
+      when: instackenv_validator_output.stdout.find("SUCCESS") == -1
+
+    - name: get number of overcloud nodes
+      shell: >
+        export IP_LENGTH=(`cat {{ instack_user_home }}/instackenv.json | grep -o 'pm_addr.*' | cut -f2-  -d':' | wc -l`);
+        echo $(($IP_LENGTH))
+      register: node_length
+
+    - name: power off node boxes - IPMI
+      shell: >
+         export IP=(`cat {{ instack_user_home }}/instackenv.json | grep -o 'pm_addr.*' | cut -f2-  -d':' | sed 's/[},\"]//g'`);
+         export USER=(`cat {{ instack_user_home }}/instackenv.json | grep -o 'pm_user.*' | cut -f2-  -d':' |rev | cut -c 2- | rev | sed 's/[},\"]//g'`);
+         export PASSWORD=(`cat {{ instack_user_home }}/instackenv.json | grep -o 'pm_password.*' | cut -f2-  -d':' |rev | cut -c 2- | rev | sed 's/[},\"]//g'`);
+         ipmitool -I lanplus -H ${IP[item]} -U ${USER[item]} -P ${PASSWORD[item]} power off
+      with_sequence: count="{{node_length.stdout}}"
+      when: hw_env.remote_mgmt == "ipmi"
+
+    - name: power off node boxes - DRACS
+      shell: >
+         export IP=(`cat {{ instack_user_home }}/instackenv.json | grep -o 'pm_addr.*' | cut -f2-  -d':' | sed 's/[},\"]//g'`);
+         export USER=(`cat {{ instack_user_home }}/instackenv.json | grep -o 'pm_user.*' | cut -f2-  -d':' |rev | cut -c 2- | rev | sed 's/[},\"]//g'`);
+         export PASSWORD=(`cat {{ instack_user_home }}/instackenv.json | grep -o 'pm_password.*' | cut -f2-  -d':' |rev | cut -c 2- | rev | sed 's/[},\"]//g'`);
+         sshpass -p ${PASSWORD[item]} ssh -o "StrictHostKeyChecking=no" ${USER[item]}@${IP[item]} "racadm serveraction powerdown"
+      with_sequence: count="{{node_length.stdout}}"
+      when: hw_env.remote_mgmt == "dracs"

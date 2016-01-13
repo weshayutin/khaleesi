@@ -1,45 +1,6 @@
 ---
 - include: "{{ base_dir }}/khaleesi/playbooks/group_by.yml ansible_ssh_user=root"
 
-- name: Setup openstack repos
-  hosts: "{{ repo_host }}"
-  vars:
-    - ansible_ssh_user: root
-    - product_override_version: 7-director
-  gather_facts: yes
-  tasks:
-      - name: clean release rpms
-        yum: name={{ item }} state=absent
-        with_items:
-          - rdo-release*
-          - epel-release
-          - rhos-release
-
-      - name: remove any yum repos not owned by rpm
-        shell: rm -Rf /etc/yum.repos.d/{{ item }}
-        with_items:
-          - beaker-*
-
-      - name: Install release tool on machine
-        command: "yum localinstall -y {{ product.rpmrepo[ansible_distribution] }}"
-        when: product.repo_type is defined and product.repo_type == 'production'
-
-        #remove this step when rdo and rhos diverge
-      - name: Install extra release tool on machine
-        command: "yum localinstall -y {{ product.rpmrepo_override[ansible_distribution] }}"
-        when: product_override_version is defined and product.repo_type_override == 'rhos-release'
-
-        #remove this step when rdo and rhos diverge
-      - name: Execute rhos-release for rdo-manager (rdo)
-        command: "rhos-release {{ product_override_version }}"
-        when: product_override_version is defined and product.repo_type_override == 'rhos-release'
-
-      - name: Install epel release
-        command: "yum localinstall -y {{ distro.epel_release }}"
-
-      - name: yum clean all
-        command: yum clean all
-
 - name: RHEL RDO prep
   hosts: "{{ repo_host }}:&RedHat"
   vars:
@@ -63,6 +24,14 @@
     - ansible_ssh_user: root
   roles:
     - { role: linux-common }
+
+- name: Enable EPEL
+  hosts: "{{ repo_host }}"
+  vars:
+    - ansible_ssh_user: root
+  tasks:
+    - name: Install epel release
+      command: "yum localinstall -y {{ distro.epel_release }}"
 
 - name: Update packages on the host
   hosts: "{{ repo_host }}"

@@ -1,0 +1,13 @@
+---
+- name: clean up rdo-manager virthost
+  hosts: virthost
+  vars:
+    - ansible_ssh_user: root
+  roles:
+    - { role: cleanup_nodes/rdo-manager,
+        when: (installer.type == "rdo-manager" and provisioner.type == "manual")
+      }
+
+- include: instack-virt-setup/gate.yml
+- include: "{{base_dir}}/khaleesi/playbooks/installer/rdo-manager/user/main.yml"
+- include: instack-virt-setup/main.yml

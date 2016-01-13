@@ -1,0 +1,18 @@
+- name: Copy the gating package
+  hosts: virthost
+  vars:
+    - ansible_ssh_user: root
+  tasks:
+    - name: copy downstream rpm package
+      copy: src={{ item }} dest=/home/{{ ansible_ssh_user }}/
+      with_fileglob:
+       - "{{ lookup('env', 'PWD') }}/generated_rpms/*.rpm"
+      when: gating_repo is defined
+
+- name: setup the virt host
+  hosts: virthost
+  tasks:
+    - name: install the generated rpm
+      shell: "yum install -y /home/{{ ansible_ssh_user }}/{{gating_repo}}*.rpm"
+      sudo: yes
+      when: gating_repo is defined
