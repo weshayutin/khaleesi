@@ -1,0 +1,25 @@
+---
+- name: introspect nodes
+  hosts: undercloud
+  tasks:
+    - name: introspect nodes
+      shell: >
+          source {{ instack_user_home }}/stackrc;
+          openstack baremetal introspection bulk start;
+
+    - name: check instrospections status
+      register: introspection_result
+      retries: 45
+      delay: 20
+      until: introspection_result.rc == 0
+      shell: |
+          source {{ instack_user_home }}/stackrc
+          OUTPUT=$(openstack baremetal introspection bulk status)
+          TOTAL_NODES=$(echo "$OUTPUT" | grep -E '\w{8}-\w{4}' | wc -l)
+          INTROSPECTED_NODES=$(echo "$OUTPUT" | grep -E ' True *\| *None ' | wc -l)
+          [ "$TOTAL_NODES" == "$INTROSPECTED_NODES" ]
+
+    - name: show profile
+      shell: >
+          source {{ instack_user_home }}/stackrc;
+          instack-ironic-deployment  --show-profile;

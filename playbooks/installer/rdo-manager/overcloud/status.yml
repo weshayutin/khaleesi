@@ -2,6 +2,10 @@
 - name: Post deploy
   hosts: undercloud
   tasks:
+    - name: set fact overcloud_deployment_result
+      set_fact:
+        overcloud_deployment_result: "{{ overcloud_deployment_result | default('1') }}"
+
     - name: echo deploy-overcloud return code in status playbook
       debug: var=overcloud_deployment_result
 

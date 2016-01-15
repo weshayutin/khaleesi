@@ -12,13 +12,17 @@ If you are interested in using instack virtual provisioning (instack-virt-setup)
     To *only* use instack-virt-setup to provision virt undercloud and overcloud nodes
     ansible-playbook -vv --extra-vars @ksgen_settings.yml -i local_hosts playbooks/installer/rdo-manager/instack-virt-setup.yml
 
-If you are using baremetal or using libvirt w/o instack-virt-setup
-
-    To *only* prepare your environment:
-    ansible-playbook -vv --extra-vars @ksgen_settings.yml -i local_hosts playbooks/installer/rdo-manager/environment-setup.yml
+Baremetal
 
     To *only* install the undercloud:
     ansible-playbook -vv --extra-vars @ksgen_settings.yml -i local_hosts playbooks/installer/rdo-manager/install_undercloud.yml
 
+Images:
+
+
+Overcloud:
+
     To *only* deploy the overcloud
     ansible-playbook -vv --extra-vars @ksgen_settings.yml -i hosts playbooks/installer/rdo-manager/overcloud/main.yml
+
+
